@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -527,14 +527,20 @@ namespace _422_Baranov_Shoes.Pages
             var dialog = new Window
             {
                 Title = "Информация о товаре",
-                Width = 450,
-                Height = 400,
+                Width = 550,
+                Height = 550,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                ResizeMode = ResizeMode.NoResize,
-                Background = Brushes.White
+                ResizeMode = ResizeMode.CanResize,
+                Background = Brushes.White,
+                MinWidth = 500,
+                MinHeight = 450
             };
 
-            var mainStack = new StackPanel { Margin = new Thickness(20) };
+            var mainGrid = new Grid();
+            mainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            mainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+            mainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            mainGrid.Margin = new Thickness(10);
 
             // Заголовок
             var header = new TextBlock
@@ -542,30 +548,46 @@ namespace _422_Baranov_Shoes.Pages
                 Text = "Управление товаром",
                 FontSize = 16,
                 FontWeight = FontWeights.Bold,
-                Margin = new Thickness(0, 0, 0, 15),
+                Margin = new Thickness(0, 0, 0, 10),
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-            mainStack.Children.Add(header);
+            Grid.SetRow(header, 0);
+            mainGrid.Children.Add(header);
 
-            // Информация о товаре
-            var detailsText = new TextBlock
+            // Информация о товаре в TextBox с прокруткой
+            var scrollViewer = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+
+            var detailsBox = new TextBox
             {
                 Text = details,
                 TextWrapping = TextWrapping.Wrap,
                 FontSize = 13,
-                Height = 200
+                Padding = new Thickness(5),
+                IsReadOnly = true,
+                Background = Brushes.WhiteSmoke,
+                BorderThickness = new Thickness(1),
+                BorderBrush = Brushes.LightGray,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Height = 300 
             };
-            mainStack.Children.Add(detailsText);
+
+            scrollViewer.Content = detailsBox;
+            Grid.SetRow(scrollViewer, 1);
+            mainGrid.Children.Add(scrollViewer);
 
             // Кнопки управления
             var buttonPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 20, 0, 0)
+                Margin = new Thickness(0, 10, 0, 0)
             };
 
-            // Кнопка "Редактировать"
             var editButton = new Button
             {
                 Content = "Редактировать",
@@ -584,7 +606,6 @@ namespace _422_Baranov_Shoes.Pages
                 NavigationService.Navigate(new UpdatePage(productId));
             };
 
-            // Кнопка "Удалить"
             var deleteButton = new Button
             {
                 Content = "Удалить",
@@ -603,7 +624,6 @@ namespace _422_Baranov_Shoes.Pages
                 DeleteProduct(productId);
             };
 
-            // Кнопка "Закрыть"
             var closeButton = new Button
             {
                 Content = "Закрыть",
@@ -625,9 +645,10 @@ namespace _422_Baranov_Shoes.Pages
             buttonPanel.Children.Add(deleteButton);
             buttonPanel.Children.Add(closeButton);
 
-            mainStack.Children.Add(buttonPanel);
-            dialog.Content = mainStack;
+            Grid.SetRow(buttonPanel, 2);
+            mainGrid.Children.Add(buttonPanel);
 
+            dialog.Content = mainGrid;
             dialog.ShowDialog();
         }
         private void btnAddProduct_Click(object sender, RoutedEventArgs e)
