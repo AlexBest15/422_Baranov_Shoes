@@ -1,0 +1,206 @@
+﻿<Page x:Class="_422_Baranov_Shoes.Pages.ProductPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Товары">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Background="#FF2196F3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Каталог обуви" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           Foreground="White"
+                           Margin="0,0,10,0"/>
+                <TextBlock x:Name="txtUserRole"
+                           FontSize="16"
+                           Foreground="White"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Контент товаров -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="ItemsProducts">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#FFDDDDDD" 
+                                BorderThickness="1" 
+                                Margin="10" 
+                                Background="White"
+                                Width="250"
+                                Height="370">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="150"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="40"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Изображение товара -->
+                                <Border Grid.Row="0" Background="#FFF5F5F5">
+                                    <Grid>
+                                        <!-- Бейдж скидки -->
+                                        <Border HorizontalAlignment="Left" 
+                                                VerticalAlignment="Top"
+                                                Background="Red" 
+                                                CornerRadius="0,0,10,0"
+                                                Padding="4,1"
+                                                Visibility="{Binding DiscountVisibility}">
+                                            <TextBlock Text="{Binding DiscountText}" 
+                                                       Foreground="White"
+                                                       FontWeight="Bold"
+                                                       FontSize="10"/>
+                                        </Border>
+
+                                        <!-- Изображение товара -->
+                                        <Image Source="{Binding ImagePath}" 
+                                               Stretch="Uniform"
+                                               MaxHeight="125"
+                                               MaxWidth="180"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Информация о товаре -->
+                                <StackPanel Grid.Row="1" Margin="8,8,8,4">
+                                    <TextBlock Text="{Binding ProductName}" 
+                                               FontWeight="Bold" 
+                                               FontSize="13"
+                                               TextWrapping="Wrap"
+                                               MaxHeight="35"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+                                        <TextBlock Text="Производитель: " 
+                                                   Foreground="Gray"
+                                                   FontSize="11"/>
+                                        <TextBlock Text="{Binding ManufacturerName}" 
+                                                   Foreground="#FF333333"
+                                                   FontSize="11"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
+                                        <TextBlock Text="Категория: " 
+                                                   Foreground="Gray"
+                                                   FontSize="10"/>
+                                        <TextBlock Text="{Binding CategoryName}" 
+                                                   Foreground="#FF333333"
+                                                   FontSize="10"/>
+                                    </StackPanel>
+
+                                    <!-- Сокращенное описание -->
+                                    <TextBlock Text="{Binding ShortDescription}" 
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               MaxHeight="45"
+                                               Margin="0,6,0,0"
+                                               Foreground="#FF666666"/>
+
+                                    <TextBlock Text="{Binding PriceText}" 
+                                               FontWeight="Bold"
+                                               FontSize="13"
+                                               Margin="0,8,0,0"
+                                               Foreground="#FF2196F3"/>
+                                </StackPanel>
+
+                                <!-- Кнопка подробнее -->
+                                <Border Grid.Row="2" Background="#FFF5F5F5">
+                                    <Button Content="Подробнее" 
+                                            Margin="5,2"
+                                            Background="#FF2196F3"
+                                            Foreground="White"
+                                            FontWeight="SemiBold"
+                                            FontSize="11"
+                                        Tag="{Binding ProductID}"
+                                            Click="btnDetails_Click"
+                                            HorizontalAlignment="Center"
+                                            Width="200"
+                                            Height="28"
+                                            Padding="0"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Панель управления -->
+        <Border Grid.Row="2" Background="#FFEEEEEE">
+            <StackPanel x:Name="pnlControls" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="Collapsed">
+
+                <!-- Поиск -->
+                <TextBox x:Name="txtSearch" 
+                         Width="200" 
+                         Height="30" 
+                         Margin="5"
+                         Padding="5"
+                         TextChanged="txtSearch_TextChanged"
+                         ToolTip="Поиск по названию, артикулу, описанию"/>
+
+                <!-- Фильтры -->
+                <ComboBox x:Name="cmbCategory" 
+                          Width="150" 
+                          Height="30" 
+                          Margin="5"
+                          DisplayMemberPath="CategoryName"
+                          SelectionChanged="cmbCategory_SelectionChanged"
+                          ToolTip="Фильтр по категории"/>
+
+                <ComboBox x:Name="cmbManufacturer" 
+                          Width="150" 
+                          Height="30" 
+                          Margin="5"
+                          DisplayMemberPath="ManufacturerName"
+                          SelectionChanged="cmbManufacturer_SelectionChanged"
+                          ToolTip="Фильтр по производителю"/>
+
+                <!-- Сортировка -->
+                <ComboBox x:Name="cmbSort" 
+                          Width="150" 
+                          Height="30" 
+                          Margin="5"
+                          SelectionChanged="cmbSort_SelectionChanged"
+                          ToolTip="Сортировка товаров">
+                    <ComboBoxItem Content="По цене (возр.)" Tag="PriceAsc"/>
+                    <ComboBoxItem Content="По цене (убыв.)" Tag="PriceDesc"/>
+                    <ComboBoxItem Content="По названию" Tag="Name"/>
+                    <ComboBoxItem Content="По остаткам" Tag="Stock"/>
+                </ComboBox>
+
+                <!-- Кнопки администратора -->
+                <Button x:Name="btnAddProduct" 
+                        Content="Добавить товар" 
+                        Width="110"
+                    Height="30" 
+                        Margin="5"
+                        Background="#FF4CAF50"
+                        Foreground="White"
+                        FontSize="11"
+                    Click="btnAddProduct_Click"
+                        Visibility="Collapsed"
+                        ToolTip="Добавить новый товар"/>
+
+                    
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>
