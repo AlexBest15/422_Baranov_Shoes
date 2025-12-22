@@ -106,7 +106,6 @@ namespace _422_Baranov_Shoes.Pages
                         MessageBox.Show("Пароль успешно изменен!", "Успешно",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        // Очищаем поля и возвращаемся
                         txtbxLogin.Clear();
                         passBxNewPassword.Clear();
                         passBxConfirmPassword.Clear();

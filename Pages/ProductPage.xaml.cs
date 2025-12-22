@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -14,29 +15,105 @@ namespace _422_Baranov_Shoes.Pages
         private ObservableCollection<ProductViewModel> _filteredProducts;
         private string _userRole;
 
-        public class ProductViewModel
+        public class ProductViewModel : INotifyPropertyChanged
         {
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            protected virtual void OnPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            private int _stockQuantity;
+            private decimal _discount;
+
             public int ProductID { get; set; }
             public string ArticleNumber { get; set; }
             public string ProductName { get; set; }
             public string Description { get; set; }
             public decimal Price { get; set; }
-            public decimal Discount { get; set; }
+
+            public decimal Discount
+            {
+                get => _discount;
+                set
+                {
+                    if (_discount != value)
+                    {
+                        _discount = value;
+                        OnPropertyChanged(nameof(Discount));
+                        OnPropertyChanged(nameof(HasDiscount));
+                        OnPropertyChanged(nameof(HasBigDiscount));
+                        OnPropertyChanged(nameof(DiscountText));
+                        OnPropertyChanged(nameof(DiscountVisibility));
+                        OnPropertyChanged(nameof(NoDiscountVisibility));
+                        OnPropertyChanged(nameof(OldPriceVisibility));
+                        OnPropertyChanged(nameof(NewPriceVisibility));
+                        OnPropertyChanged(nameof(BackgroundColor));
+                        OnPropertyChanged(nameof(InfoBackground));
+                        OnPropertyChanged(nameof(DiscountBackground));
+                        OnPropertyChanged(nameof(ActionBackground));
+                        OnPropertyChanged(nameof(TextForeground));
+                        OnPropertyChanged(nameof(LabelForeground));
+                    }
+                }
+            }
+
             public string ManufacturerName { get; set; }
             public string CategoryName { get; set; }
-            public int StockQuantity { get; set; }
+
+            public int StockQuantity
+            {
+                get => _stockQuantity;
+                set
+                {
+                    if (_stockQuantity != value)
+                    {
+                        _stockQuantity = value;
+                        OnPropertyChanged(nameof(StockQuantity));
+                        OnPropertyChanged(nameof(IsOutOfStock));
+                        OnPropertyChanged(nameof(StockStatusText));
+                        OnPropertyChanged(nameof(StockStatusColor));
+                        OnPropertyChanged(nameof(BackgroundColor));
+                        OnPropertyChanged(nameof(InfoBackground));
+                        OnPropertyChanged(nameof(DiscountBackground));
+                        OnPropertyChanged(nameof(ActionBackground));
+                        OnPropertyChanged(nameof(TextForeground));
+                        OnPropertyChanged(nameof(LabelForeground));
+                    }
+                }
+            }
+
             public string UnitName { get; set; }
             public string SupplierName { get; set; }
-
-            // Свойства для изображения
             public string ImagePath { get; set; }
             public bool HasImage { get; set; }
 
             public bool HasDiscount => Discount > 0;
 
+            public bool HasBigDiscount => Discount > 15;
+
+            public bool IsOutOfStock => StockQuantity <= 0;
+
             public decimal DiscountedPrice => Price * (1 - Discount / 100);
 
-            public string PriceText
+            public string PriceText => $"{Price:C}";
+
+            public string DiscountText => HasDiscount ? $"-{Discount}%" : "";
+
+            public string OldPriceText => HasDiscount ? $"{Price:C}" : "";
+
+            public string NewPriceText => HasDiscount ? $"{DiscountedPrice:C}" : "";
+
+            public Visibility DiscountVisibility => HasDiscount ? Visibility.Visible : Visibility.Collapsed;
+
+            public Visibility NoDiscountVisibility => !HasDiscount ? Visibility.Visible : Visibility.Collapsed;
+
+            public Visibility OldPriceVisibility => HasDiscount ? Visibility.Visible : Visibility.Collapsed;
+
+            public Visibility NewPriceVisibility => HasDiscount ? Visibility.Visible : Visibility.Collapsed;
+
+            public string FullPriceText
             {
                 get
                 {
@@ -48,10 +125,6 @@ namespace _422_Baranov_Shoes.Pages
                 }
             }
 
-            public string DiscountText => HasDiscount ? $"Скидка {Discount}%!" : "";
-
-            public Visibility DiscountVisibility => HasDiscount ? Visibility.Visible : Visibility.Collapsed;
-
             public string ShortDescription
             {
                 get
@@ -59,10 +132,118 @@ namespace _422_Baranov_Shoes.Pages
                     if (string.IsNullOrEmpty(Description))
                         return "Нет описания";
 
-                    if (Description.Length > 60)
-                        return Description.Substring(0, 57) + "...";
+                    if (Description.Length > 120)
+                        return Description.Substring(0, 117) + "...";
 
                     return Description;
+                }
+            }
+
+            public string StockStatusText
+            {
+                get
+                {
+                    if (StockQuantity <= 0)
+                        return "Товар отсутствует";
+                    else if (StockQuantity < 5)
+                        return $"Мало: {StockQuantity} {UnitName}";
+                    else if (StockQuantity < 10)
+                        return $"Осталось: {StockQuantity} {UnitName}";
+                    else
+                        return $"В наличии: {StockQuantity} {UnitName}";
+                }
+            }
+
+            public Brush StockStatusColor
+            {
+                get
+                {
+                    if (StockQuantity <= 0)
+                        return Brushes.Red;
+                    else if (StockQuantity < 5)
+                        return Brushes.OrangeRed;
+                    else if (StockQuantity < 10)
+                        return Brushes.Orange;
+                    else
+                        return Brushes.Green;
+                }
+            }
+
+            public Brush BackgroundColor
+            {
+                get
+                {
+                    if (IsOutOfStock)
+                        return new SolidColorBrush(Color.FromArgb(255, 240, 248, 255));
+                    else if (HasBigDiscount)
+                        return new SolidColorBrush(Color.FromArgb(255, 46, 139, 87));
+                    else
+                        return Brushes.White;
+                }
+            }
+
+            public Brush InfoBackground
+            {
+                get
+                {
+                    if (IsOutOfStock)
+                        return new SolidColorBrush(Color.FromArgb(255, 230, 240, 255));
+                    else if (HasBigDiscount)
+                        return new SolidColorBrush(Color.FromArgb(255, 60, 149, 107));
+                    else
+                        return Brushes.White;
+                }
+            }
+
+            public Brush DiscountBackground
+            {
+                get
+                {
+                    if (IsOutOfStock)
+                        return new SolidColorBrush(Color.FromArgb(255, 220, 235, 255));
+                    else if (HasBigDiscount)
+                        return new SolidColorBrush(Color.FromArgb(255, 70, 159, 117));
+                    else
+                        return new SolidColorBrush(Color.FromArgb(255, 248, 248, 248));
+                }
+            }
+
+            public Brush ActionBackground
+            {
+                get
+                {
+                    if (IsOutOfStock)
+                        return new SolidColorBrush(Color.FromArgb(255, 220, 235, 255));
+                    else if (HasBigDiscount)
+                        return new SolidColorBrush(Color.FromArgb(255, 70, 159, 117));
+                    else
+                        return new SolidColorBrush(Color.FromArgb(255, 248, 248, 248));
+                }
+            }
+
+            public Brush TextForeground
+            {
+                get
+                {
+                    if (IsOutOfStock)
+                        return Brushes.DarkSlateGray;
+                    else if (HasBigDiscount)
+                        return Brushes.White;
+                    else
+                        return Brushes.Black;
+                }
+            }
+
+            public Brush LabelForeground
+            {
+                get
+                {
+                    if (IsOutOfStock)
+                        return Brushes.SlateGray;
+                    else if (HasBigDiscount)
+                        return new SolidColorBrush(Color.FromArgb(255, 220, 220, 220));
+                    else
+                        return new SolidColorBrush(Color.FromArgb(255, 136, 136, 136));
                 }
             }
         }
@@ -78,7 +259,6 @@ namespace _422_Baranov_Shoes.Pages
 
         private void SetupControls()
         {
-            // Показываем панель управления только для Менеджера и Администратора
             bool showControls = _userRole == "Менеджер" || _userRole == "Администратор";
             pnlControls.Visibility = showControls ? Visibility.Visible : Visibility.Collapsed;
 
@@ -87,21 +267,17 @@ namespace _422_Baranov_Shoes.Pages
                 LoadFilters();
             }
 
-            // Настраиваем видимость кнопок в зависимости от роли
             if (_userRole == "Администратор")
             {
                 btnAddProduct.Visibility = Visibility.Visible;
-               
             }
             else if (_userRole == "Менеджер")
             {
                 btnAddProduct.Visibility = Visibility.Collapsed;
-               
             }
             else
             {
                 btnAddProduct.Visibility = Visibility.Collapsed;
-               
             }
         }
 
@@ -494,22 +670,16 @@ namespace _422_Baranov_Shoes.Pages
             var product = _products.FirstOrDefault(p => p.ProductID == productId);
             if (product != null)
             {
-                string details = $"Артикул: {product.ArticleNumber}\n" +
-                               $"Название: {product.ProductName}\n" +
+                string details = $"Категория товара: {product.CategoryName}\n" +
+                               $"Наименование товара: {product.ProductName}\n" +
+                               $"Артикул: {product.ArticleNumber}\n" +
+                               $"Описание товара: {product.Description}\n" +
                                $"Производитель: {product.ManufacturerName}\n" +
-                               $"Категория: {product.CategoryName}\n" +
                                $"Поставщик: {product.SupplierName}\n" +
-                               $"{product.PriceText}\n" +
+                               $"{product.FullPriceText}\n" +
                                $"Единица измерения: {product.UnitName}\n" +
-                               $"В наличии: {product.StockQuantity} {product.UnitName}\n" +
-                               $"\nОписание:\n{product.Description}";
+                               $"{product.StockStatusText}\n";
 
-                if (product.StockQuantity <= 0)
-                {
-                    details += $"Товар временно отсутствует на складе";
-                }
-
-                // Для администратора показываем кастомное окно
                 if (_userRole == "Администратор")
                 {
                     ShowAdminProductDialog(productId, details);
@@ -527,45 +697,64 @@ namespace _422_Baranov_Shoes.Pages
             var dialog = new Window
             {
                 Title = "Информация о товаре",
-                Width = 450,
-                Height = 400,
+                Width = 550,
+                Height = 550,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                ResizeMode = ResizeMode.NoResize,
-                Background = Brushes.White
+                ResizeMode = ResizeMode.CanResize,
+                Background = Brushes.White,
+                MinWidth = 500,
+                MinHeight = 450
             };
 
-            var mainStack = new StackPanel { Margin = new Thickness(20) };
+            var mainGrid = new Grid();
+            mainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            mainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+            mainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            mainGrid.Margin = new Thickness(10);
 
-            // Заголовок
             var header = new TextBlock
             {
                 Text = "Управление товаром",
                 FontSize = 16,
                 FontWeight = FontWeights.Bold,
-                Margin = new Thickness(0, 0, 0, 15),
+                Margin = new Thickness(0, 0, 0, 10),
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-            mainStack.Children.Add(header);
+            Grid.SetRow(header, 0);
+            mainGrid.Children.Add(header);
 
-            // Информация о товаре
-            var detailsText = new TextBlock
+            var scrollViewer = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+
+            var detailsBox = new TextBox
             {
                 Text = details,
                 TextWrapping = TextWrapping.Wrap,
                 FontSize = 13,
-                Height = 200
+                Padding = new Thickness(5),
+                IsReadOnly = true,
+                Background = Brushes.WhiteSmoke,
+                BorderThickness = new Thickness(1),
+                BorderBrush = Brushes.LightGray,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Height = 300
             };
-            mainStack.Children.Add(detailsText);
 
-            // Кнопки управления
+            scrollViewer.Content = detailsBox;
+            Grid.SetRow(scrollViewer, 1);
+            mainGrid.Children.Add(scrollViewer);
+
             var buttonPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 20, 0, 0)
+                Margin = new Thickness(0, 10, 0, 0)
             };
 
-            // Кнопка "Редактировать"
             var editButton = new Button
             {
                 Content = "Редактировать",
@@ -584,7 +773,6 @@ namespace _422_Baranov_Shoes.Pages
                 NavigationService.Navigate(new UpdatePage(productId));
             };
 
-            // Кнопка "Удалить"
             var deleteButton = new Button
             {
                 Content = "Удалить",
@@ -603,7 +791,6 @@ namespace _422_Baranov_Shoes.Pages
                 DeleteProduct(productId);
             };
 
-            // Кнопка "Закрыть"
             var closeButton = new Button
             {
                 Content = "Закрыть",
@@ -625,11 +812,13 @@ namespace _422_Baranov_Shoes.Pages
             buttonPanel.Children.Add(deleteButton);
             buttonPanel.Children.Add(closeButton);
 
-            mainStack.Children.Add(buttonPanel);
-            dialog.Content = mainStack;
+            Grid.SetRow(buttonPanel, 2);
+            mainGrid.Children.Add(buttonPanel);
 
+            dialog.Content = mainGrid;
             dialog.ShowDialog();
         }
+
         private void btnAddProduct_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole == "Администратор")
@@ -642,35 +831,6 @@ namespace _422_Baranov_Shoes.Pages
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-
-        private void btnEditProduct_Click(object sender, RoutedEventArgs e)
-        {
-            if (_userRole == "Администратор")
-            {
-                MessageBox.Show("Для редактирования товара нажмите на кнопку 'Подробнее' у нужного товара",
-                    "Редактирование", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("У вас нет прав для редактирования товаров", "Доступ запрещен",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        private void btnDeleteProduct_Click(object sender, RoutedEventArgs e)
-        {
-            if (_userRole == "Администратор")
-            {
-                MessageBox.Show("Для удаления товара нажмите на кнопку 'Подробнее' у нужного товара",
-                    "Удаление", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("У вас нет прав для удаления товаров", "Доступ запрещен",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-       
 
         private void DeleteProduct(int productId)
         {

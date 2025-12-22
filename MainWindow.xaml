@@ -13,7 +13,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" Background="#FF2D2D30" Padding="10">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Button x:Name="BackButton" Content="Назад" Click="Back_Click" 
@@ -23,10 +22,8 @@
             </StackPanel>
         </Border>
 
-        <!-- Основной контент -->
         <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden"/>
 
-        <!-- Подвал -->
         <Border Grid.Row="2" Background="#FF2D2D30" Padding="10">
             <TextBlock Foreground="White" Text="© Обувной магазин" 
                        HorizontalAlignment="Center"/>

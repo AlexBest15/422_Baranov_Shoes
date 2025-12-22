@@ -19,7 +19,6 @@ namespace _422_Baranov_Shoes.Pages
             {
                 using (var context = new ShoeStoreEntities())
                 {
-                    // Загружаем производителей
                     cmbManufacturer.Items.Clear();
                     cmbManufacturer.Items.Add("-- Выберите производителя --");
                     foreach (var manufacturer in context.Manufacturers.ToList())
@@ -28,7 +27,6 @@ namespace _422_Baranov_Shoes.Pages
                     }
                     cmbManufacturer.SelectedIndex = 0;
 
-                    // Загружаем категории
                     cmbCategory.Items.Clear();
                     cmbCategory.Items.Add("-- Выберите категорию --");
                     foreach (var category in context.Categories.ToList())
@@ -37,7 +35,6 @@ namespace _422_Baranov_Shoes.Pages
                     }
                     cmbCategory.SelectedIndex = 0;
 
-                    // Загружаем поставщиков
                     cmbSupplier.Items.Clear();
                     cmbSupplier.Items.Add("-- Выберите поставщика --");
                     foreach (var supplier in context.Suppliers.ToList())
@@ -46,7 +43,6 @@ namespace _422_Baranov_Shoes.Pages
                     }
                     cmbSupplier.SelectedIndex = 0;
 
-                    // Загружаем единицы измерения
                     cmbUnit.Items.Clear();
                     cmbUnit.Items.Add("-- Выберите единицу --");
                     foreach (var unit in context.Units.ToList())
@@ -67,7 +63,6 @@ namespace _422_Baranov_Shoes.Pages
         {
             try
             {
-                // Валидация данных
                 if (string.IsNullOrWhiteSpace(txtProductName.Text))
                 {
                     MessageBox.Show("Введите название товара", "Ошибка",
@@ -100,7 +95,6 @@ namespace _422_Baranov_Shoes.Pages
                     return;
                 }
 
-                // Получаем выбранные значения
                 var selectedManufacturer = cmbManufacturer.SelectedItem as Manufacturers;
                 var selectedCategory = cmbCategory.SelectedItem as Categories;
                 var selectedSupplier = cmbSupplier.SelectedItem as Suppliers;
@@ -113,7 +107,6 @@ namespace _422_Baranov_Shoes.Pages
                     return;
                 }
 
-                // Создаем новый товар
                 using (var context = new ShoeStoreEntities())
                 {
                     var newProduct = new Products

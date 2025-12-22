@@ -74,7 +74,6 @@ namespace _422_Baranov_Shoes.Pages
         {
             bool isValid = true;
 
-            // Проверка заполнения полей
             if (string.IsNullOrEmpty(txtbxLogin.Text) ||
                 string.IsNullOrEmpty(txtbxFullName.Text) ||
                 string.IsNullOrEmpty(passBxPassword.Password) ||
@@ -86,7 +85,6 @@ namespace _422_Baranov_Shoes.Pages
                 return;
             }
 
-            // Проверка существования пользователя
             using (var context = new ShoeStoreEntities())
             {
                 var existingUser = context.Users
@@ -101,7 +99,6 @@ namespace _422_Baranov_Shoes.Pages
                 }
             }
 
-            // Проверка пароля
             if (passBxPassword.Password.Length < 6)
             {
                 MessageBox.Show("Пароль должен содержать минимум 6 символов!",
@@ -109,7 +106,6 @@ namespace _422_Baranov_Shoes.Pages
                 isValid = false;
             }
 
-            // Проверка совпадения паролей
             if (passBxPassword.Password != passBxConfirmPassword.Password)
             {
                 MessageBox.Show("Пароли не совпадают!", "Ошибка",
@@ -117,7 +113,6 @@ namespace _422_Baranov_Shoes.Pages
                 isValid = false;
             }
 
-            // Проверка пароля на сложность
             if (!Regex.IsMatch(passBxPassword.Password, @"^(?=.*[a-zA-Z])(?=.*\d).+$"))
             {
                 MessageBox.Show("Пароль должен содержать буквы и цифры!",

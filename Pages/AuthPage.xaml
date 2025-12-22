@@ -10,7 +10,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <Border Grid.Row="0" Background="#FF2D2D30" Padding="20">
             <TextBlock Text="Вход в систему" 
                        Foreground="White" 
@@ -19,14 +18,12 @@
                        HorizontalAlignment="Center"/>
         </Border>
 
-        <!-- Основная форма -->
         <StackPanel Grid.Row="1" 
                     VerticalAlignment="Center" 
                     HorizontalAlignment="Center"
                     Width="400"
                     Margin="20">
 
-            <!-- Логин -->
             <Border BorderBrush="#FFCCCCCC" 
                     BorderThickness="1" 
                     Background="White"
@@ -50,7 +47,6 @@
                 </Grid>
             </Border>
 
-            <!-- Пароль -->
             <Border BorderBrush="#FFCCCCCC" 
                     BorderThickness="1" 
                     Background="White"
@@ -74,7 +70,6 @@
                 </Grid>
             </Border>
 
-            <!-- Кнопки -->
             <Button x:Name="btnLogin"
                     Content="Войти"
                     Background="#FF0078D7"
@@ -126,7 +121,6 @@
             </StackPanel>
         </StackPanel>
 
-        <!-- Подвал -->
         <Border Grid.Row="2" 
                 Background="#FFF5F5F5" 
                 BorderBrush="#FFE0E0E0" 

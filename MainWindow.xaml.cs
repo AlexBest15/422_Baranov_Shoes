@@ -30,7 +30,6 @@ namespace _422_Baranov_Shoes
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Таймер для времени
             var timer = new System.Windows.Threading.DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(1)
